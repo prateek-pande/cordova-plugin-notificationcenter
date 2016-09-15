@@ -1,26 +1,26 @@
 import Foundation;
 
 @objc(NotificationCenterPlugin) class NotificationCenterPlugin : CDVPlugin {
-    var allNotificationsObserver: AnyObject? = nil;
-    var addedObservers = [String: AnyObject]();
+    dynamic var allNotificationsObserver: AnyObject? = nil;
+    dynamic var addedObservers = [String: AnyObject]();
 
     func addObserver(command: CDVInvokedUrlCommand) {
         let notificationCenter = NSNotificationCenter.defaultCenter();
         let notificationName = command.arguments[0] as! String;
 
         if(notificationName == "all" && allNotificationsObserver == nil){
-            allNotificationsObserver = notificationCenter.addObserverForName(nil, object: nil, queue: nil) { notification in
-                self.didReceiveNotification(notification, command: command);
+            allNotificationsObserver = notificationCenter.addObserverForName(nil, object: nil, queue: nil) { [weak self] notification -> Void  in
+                self?.didReceiveNotification(notification, command: command);
             };
         }
 
         if(notificationName != "all"){
-            let observer = notificationCenter.addObserverForName(notificationName, object: nil, queue: nil) { notification in
-                self.didReceiveNotification(notification, command: command);
+            let observer = notificationCenter.addObserverForName(notificationName, object: nil, queue: nil) { [weak self] notification -> Void in
+                self?.didReceiveNotification(notification, command: command);
             };
-
             addedObservers[notificationName] = observer;
         }
+
     }
 
     func removeObserver(command: CDVInvokedUrlCommand) {
@@ -51,7 +51,7 @@ import Foundation;
     }
 
     private func didReceiveNotification (notification: NSNotification, command: CDVInvokedUrlCommand) {
-        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsString: notification.name);
+        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsDictionary: notification.userInfo);
         pluginResult.setKeepCallbackAsBool(true);
         commandDelegate!.sendPluginResult(pluginResult, callbackId:command.callbackId);
     }
