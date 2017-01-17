@@ -22,6 +22,13 @@ cordova.plugins.notificationCenter.addObserver('UIDeviceOrientationDidChangeNoti
   console.log('UIDeviceOrientationDidChangeNotification has been sent');
 });
 ```
+Post notifications :
+```js
+cordova.plugins.notificationCenter.postNotification('SomeNotification');
+
+cordova.plugins.notificationCenter.postNotification('SomeNotification',{'key':'value'});
+```
+
 Remove a specific observer :
 
 ```js
